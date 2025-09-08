@@ -1,20 +1,20 @@
 <?php
-// Used by `wp server` to route requests.
+// Used by `fp server` to route requests.
 
-namespace WP_CLI\Router;
+namespace FP_CLI\Router;
 
 /**
- * This is a copy of WordPress's add_filter() function.
+ * This is a copy of FinPress's add_filter() function.
  *
- * We duplicate it because WordPress is not loaded yet.
+ * We duplicate it because FinPress is not loaded yet.
  */
 function add_filter( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) {
-	global $wp_filter, $merged_filters;
+	global $fp_filter, $merged_filters;
 
-	$idx = _wp_filter_build_unique_id( $tag, $function_to_add, $priority );
+	$idx = _fp_filter_build_unique_id( $tag, $function_to_add, $priority );
 
-	// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-	$wp_filter[ $tag ][ $priority ][ $idx ] = array(
+	// phpcs:ignore FinPress.FP.GlobalVariablesOverride.Prohibited
+	$fp_filter[ $tag ][ $priority ][ $idx ] = array(
 		'function'      => $function_to_add,
 		'accepted_args' => $accepted_args,
 	);
@@ -23,12 +23,12 @@ function add_filter( $tag, $function_to_add, $priority = 10, $accepted_args = 1 
 }
 
 /**
- * This is a copy of WordPress's _wp_filter_build_unique_id() function.
+ * This is a copy of FinPress's _fp_filter_build_unique_id() function.
  *
- * We duplicate it because WordPress is not loaded yet.
+ * We duplicate it because FinPress is not loaded yet.
  */
-function _wp_filter_build_unique_id( $tag, $callback, $priority ) {
-	global $wp_filter;
+function _fp_filter_build_unique_id( $tag, $callback, $priority ) {
+	global $fp_filter;
 	static $filter_id_count = 0;
 
 	if ( is_string( $callback ) ) {
@@ -48,18 +48,18 @@ function _wp_filter_build_unique_id( $tag, $callback, $priority ) {
 			return spl_object_hash( $callback[0] ) . $callback[1];
 		} else {
 			$obj_idx = get_class( $callback[0] ) . $callback[1];
-			if ( ! isset( $callback[0]->wp_filter_id ) ) {
+			if ( ! isset( $callback[0]->fp_filter_id ) ) {
 				if ( false === $priority ) {
 					return false;
 				}
-				$obj_idx .= isset( $wp_filter[ $tag ][ $priority ] )
-					? count( (array) $wp_filter[ $tag ][ $priority ] )
+				$obj_idx .= isset( $fp_filter[ $tag ][ $priority ] )
+					? count( (array) $fp_filter[ $tag ][ $priority ] )
 					: $filter_id_count;
 
-				$callback[0]->wp_filter_id = $filter_id_count;
+				$callback[0]->fp_filter_id = $filter_id_count;
 				++$filter_id_count;
 			} else {
-				$obj_idx .= $callback[0]->wp_filter_id;
+				$obj_idx .= $callback[0]->fp_filter_id;
 			}
 
 			return $obj_idx;
@@ -71,7 +71,7 @@ function _wp_filter_build_unique_id( $tag, $callback, $priority ) {
 }
 
 function _get_full_host( $url ) {
-	// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+	// phpcs:ignore FinPress.FP.AlternativeFunctions.parse_url_parse_url
 	$parsed_url = parse_url( $url );
 
 	$host = $parsed_url['host'];
@@ -82,11 +82,11 @@ function _get_full_host( $url ) {
 	return $host;
 }
 
-// We need to trick WordPress into using the URL set by `wp server`, especially on multisite.
+// We need to trick FinPress into using the URL set by `fp server`, especially on multisite.
 add_filter(
 	'option_home',
 	function ( $url ) {
-		$GLOBALS['wpcli_server_original_url'] = $url;
+		$GLOBALS['fpcli_server_original_url'] = $url;
 
 		return 'http://' . $_SERVER['HTTP_HOST'];
 	},
@@ -96,11 +96,11 @@ add_filter(
 add_filter(
 	'option_siteurl',
 	function ( $url ) {
-		if ( ! isset( $GLOBALS['wpcli_server_original_url'] ) ) {
+		if ( ! isset( $GLOBALS['fpcli_server_original_url'] ) ) {
 			get_option( 'home' );  // trigger the option_home filter
 		}
 
-		$home_url_host = _get_full_host( $GLOBALS['wpcli_server_original_url'] );
+		$home_url_host = _get_full_host( $GLOBALS['fpcli_server_original_url'] );
 		$site_url_host = _get_full_host( $url );
 
 		if ( $site_url_host === $home_url_host ) {
@@ -113,23 +113,23 @@ add_filter(
 );
 
 $_SERVER['SERVER_ADDR'] = gethostbyname( $_SERVER['SERVER_NAME'] );
-$wpcli_server_root      = $_SERVER['DOCUMENT_ROOT'];
-// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
-$wpcli_server_path = '/' . ltrim( parse_url( urldecode( $_SERVER['REQUEST_URI'] ) )['path'], '/' );
+$fpcli_server_root      = $_SERVER['DOCUMENT_ROOT'];
+// phpcs:ignore FinPress.FP.AlternativeFunctions.parse_url_parse_url
+$fpcli_server_path = '/' . ltrim( parse_url( urldecode( $_SERVER['REQUEST_URI'] ) )['path'], '/' );
 
-if ( file_exists( $wpcli_server_root . $wpcli_server_path ) ) {
-	if ( is_dir( $wpcli_server_root . $wpcli_server_path ) && substr( $wpcli_server_path, -1 ) !== '/' ) {
-		header( "Location: $wpcli_server_path/" );
+if ( file_exists( $fpcli_server_root . $fpcli_server_path ) ) {
+	if ( is_dir( $fpcli_server_root . $fpcli_server_path ) && substr( $fpcli_server_path, -1 ) !== '/' ) {
+		header( "Location: $fpcli_server_path/" );
 		exit;
 	}
 
-	if ( strpos( $wpcli_server_path, '.php' ) !== false ) {
-		chdir( dirname( $wpcli_server_root . $wpcli_server_path ) );
-		require_once $wpcli_server_root . $wpcli_server_path;
+	if ( strpos( $fpcli_server_path, '.php' ) !== false ) {
+		chdir( dirname( $fpcli_server_root . $fpcli_server_path ) );
+		require_once $fpcli_server_root . $fpcli_server_path;
 	} else {
 		return false;
 	}
 } else {
-	chdir( $wpcli_server_root );
+	chdir( $fpcli_server_root );
 	require_once 'index.php';
 }

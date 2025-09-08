@@ -1,8 +1,8 @@
 {
-    "name": "wp-cli/server-command",
-    "type": "wp-cli-package",
-    "description": "Launches PHP's built-in web server for a specific WordPress installation.",
-    "homepage": "https://github.com/wp-cli/server-command",
+    "name": "fp-cli/server-command",
+    "type": "fp-cli-package",
+    "description": "Launches PHP's built-in web server for a specific FinPress installation.",
+    "homepage": "https://github.com/fp-cli/server-command",
     "license": "MIT",
     "authors": [
         {
@@ -12,18 +12,18 @@
         }
     ],
     "require": {
-        "wp-cli/wp-cli": "^2.13"
+        "fp-cli/fp-cli": "^2.13"
     },
     "require-dev": {
-        "wp-cli/entity-command": "^2",
-        "wp-cli/wp-cli-tests": "^5"
+        "fp-cli/entity-command": "^2",
+        "fp-cli/fp-cli-tests": "^5"
     },
     "config": {
         "process-timeout": 7200,
         "sort-packages": true,
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "johnpbloch/wordpress-core-installer": true,
+            "johnpbloch/finpress-core-installer": true,
             "phpstan/extension-installer": true
         },
         "lock": false
@@ -65,6 +65,6 @@
         ]
     },
     "support": {
-        "issues": "https://github.com/wp-cli/server-command/issues"
+        "issues": "https://github.com/fp-cli/server-command/issues"
     }
 }

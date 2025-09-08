@@ -1,15 +1,15 @@
 @require-php-5.4
-Feature: Serve WordPress locally
+Feature: Serve FinPress locally
 
   Scenario: Vanilla install
-    Given a WP install
-    And I launch in the background `wp server --host=localhost --port=8181`
-    And I run `wp option set blogdescription 'Just another WordPress site'`
+    Given a FP install
+    And I launch in the background `fp server --host=localhost --port=8181`
+    And I run `fp option set blogdescription 'Just another FinPress site'`
 
     When I run `curl -sS localhost:8181`
     Then STDOUT should contain:
       """
-      Just another WordPress site
+      Just another FinPress site
       """
 
     When I run `curl -sS localhost:8181/license.txt > /tmp/license.txt`
